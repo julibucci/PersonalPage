@@ -1,0 +1,50 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+
+env:
+  IMAGE_NAME: ${{ github.repository_owner }}/personal-page
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      sha_tag: ${{ steps.sha_tag.outputs.tag }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set SHA tag
+        id: sha_tag
+        run: echo "tag=ghcr.io/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
+            ${{ steps.sha_tag.outputs.tag }}
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy to k3s
+        run: |
+          kubectl set image deployment/julietabucci julietabucci=${{ needs.build.outputs.sha_tag }}
+          kubectl rollout status deployment/julietabucci --timeout=120s
