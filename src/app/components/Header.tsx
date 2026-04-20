@@ -1,10 +1,28 @@
 import { Menu, X, Sun, Moon } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
+
+const sections = ['inicio', 'sobre-mi', 'education', 'habilidades', 'proyectos'];
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('inicio');
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY + 120;
+      let current = 'inicio';
+      for (const id of sections) {
+        const el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollY) current = id;
+      }
+      setActiveSection(current);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -16,8 +34,21 @@ export function Header() {
     setIsMenuOpen(false);
   };
 
-  const navBtn = "px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative group rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30";
-  const underline = <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>;
+  const navBtn = (id: string) =>
+    `px-4 py-2 transition-colors relative group rounded-lg text-sm font-medium ` +
+    (activeSection === id
+      ? 'text-[#8B4513] dark:text-amber-400 bg-[#f0e0d0] dark:bg-amber-900/30'
+      : 'text-slate-600 dark:text-slate-300 hover:text-[#8B4513] dark:hover:text-amber-400 hover:bg-[#f0e0d0] dark:hover:bg-amber-900/20');
+
+  const underline = (id: string) => (
+    <span className={`absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-[#8B4513] to-[#c4956a] transition-transform origin-left ${activeSection === id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+  );
+
+  const mobileBtn = (id: string) =>
+    `transition-colors text-left px-4 py-2 rounded-lg text-sm font-medium ` +
+    (activeSection === id
+      ? 'text-[#8B4513] dark:text-amber-400 bg-[#f0e0d0] dark:bg-amber-900/30'
+      : 'text-slate-600 dark:text-slate-300 hover:text-[#8B4513] dark:hover:text-amber-400 hover:bg-[#f0e0d0] dark:hover:bg-amber-900/20');
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-50 border-b border-slate-200/60 dark:border-slate-700/60 shadow-sm">
@@ -35,20 +66,20 @@ export function Header() {
 
           <div className="hidden md:block">
             <div className="flex items-center gap-1">
-              <button onClick={() => scrollToSection('inicio')} className={navBtn}>
-                Home{underline}
+              <button onClick={() => scrollToSection('inicio')} className={navBtn('inicio')}>
+                Home{underline('inicio')}
               </button>
-              <button onClick={() => scrollToSection('sobre-mi')} className={navBtn}>
-                About me{underline}
+              <button onClick={() => scrollToSection('sobre-mi')} className={navBtn('sobre-mi')}>
+                About me{underline('sobre-mi')}
               </button>
-              <button onClick={() => scrollToSection('education')} className={navBtn}>
-                Education & Certifications{underline}
+              <button onClick={() => scrollToSection('education')} className={navBtn('education')}>
+                Education & Certifications{underline('education')}
               </button>
-              <button onClick={() => scrollToSection('habilidades')} className={navBtn}>
-                Skills{underline}
+              <button onClick={() => scrollToSection('habilidades')} className={navBtn('habilidades')}>
+                Skills{underline('habilidades')}
               </button>
-              <button onClick={() => scrollToSection('proyectos')} className={navBtn}>
-                Projects{underline}
+              <button onClick={() => scrollToSection('proyectos')} className={navBtn('proyectos')}>
+                Projects{underline('proyectos')}
               </button>
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -80,21 +111,11 @@ export function Header() {
         {isMenuOpen && (
           <div className="md:hidden pb-4 border-t border-slate-200 dark:border-slate-700 mt-2 pt-4">
             <div className="flex flex-col gap-2">
-              <button onClick={() => scrollToSection('inicio')} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left px-4 py-2 rounded-lg">
-                Home
-              </button>
-              <button onClick={() => scrollToSection('sobre-mi')} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left px-4 py-2 rounded-lg">
-                About me
-              </button>
-              <button onClick={() => scrollToSection('education')} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left px-4 py-2 rounded-lg">
-                Education & Certifications
-              </button>
-              <button onClick={() => scrollToSection('habilidades')} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left px-4 py-2 rounded-lg">
-                Skills
-              </button>
-              <button onClick={() => scrollToSection('proyectos')} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left px-4 py-2 rounded-lg">
-                Projects
-              </button>
+              <button onClick={() => scrollToSection('inicio')} className={mobileBtn('inicio')}>Home</button>
+              <button onClick={() => scrollToSection('sobre-mi')} className={mobileBtn('sobre-mi')}>About me</button>
+              <button onClick={() => scrollToSection('education')} className={mobileBtn('education')}>Education & Certifications</button>
+              <button onClick={() => scrollToSection('habilidades')} className={mobileBtn('habilidades')}>Skills</button>
+              <button onClick={() => scrollToSection('proyectos')} className={mobileBtn('proyectos')}>Projects</button>
             </div>
           </div>
         )}
