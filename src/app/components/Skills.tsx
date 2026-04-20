@@ -53,7 +53,7 @@ export function Skills() {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-left mb-16">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#4a7c59] dark:text-[#6aaa80] mb-3">03 — Technical Skills</p>
-          <h2 className="text-slate-900 dark:text-white mb-4">Technical Skills</h2>
+          <h2 className="text-slate-900 dark:text-white mb-4 text-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>What I work with</h2>
           <div className="h-1 w-20 bg-gradient-to-r from-[#5C3317] to-[#8B4513] rounded-full" />
         </div>
 

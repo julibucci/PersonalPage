@@ -29,16 +29,16 @@ export function Hero() {
             {/* Name */}
             <h1
               className="leading-none mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: "'Playfair Display', serif" }}
             >
               <span
-                className="block text-[#1a0f00] dark:text-white font-semibold"
+                className="block text-[#1a0f00] dark:text-white font-bold"
                 style={{ fontSize: 'clamp(56px, 7.5vw, 90px)' }}
               >
                 Julieta
               </span>
               <span
-                className="block italic text-[#2d5a27] dark:text-green-400 font-semibold"
+                className="block text-[#c4522a] dark:text-[#e8856a] font-bold"
                 style={{ fontSize: 'clamp(56px, 7.5vw, 90px)' }}
               >
                 Bucci
@@ -46,7 +46,7 @@ export function Hero() {
             </h1>
 
             {/* Subtitle */}
-            <p className="font-mono uppercase tracking-[0.22em] text-xs text-black dark:text-slate-200 mb-10">
+            <p className="font-mono uppercase tracking-[0.22em] text-xs font-bold text-black dark:text-white mb-10">
               Software Engineering Student &amp; Programmer
             </p>
 
