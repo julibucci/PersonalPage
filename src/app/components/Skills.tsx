@@ -51,9 +51,10 @@ export function Skills() {
     >
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-indigo-100 dark:bg-indigo-900/20 rounded-full filter blur-3xl opacity-20" />
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="text-center mb-16">
+        <div className="text-left mb-16">
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#4a7c59] dark:text-[#6aaa80] mb-3">03 — Technical Skills</p>
           <h2 className="text-slate-900 dark:text-white mb-4">Technical Skills</h2>
-          <div className="h-1 w-20 bg-gradient-to-r from-[#5C3317] to-[#8B4513] mx-auto rounded-full" />
+          <div className="h-1 w-20 bg-gradient-to-r from-[#5C3317] to-[#8B4513] rounded-full" />
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
