@@ -24,6 +24,11 @@ export function Projects() {
       title: 'Netflix Data Analysis',
       description: 'Exploratory data analysis of the Netflix catalog using Python. Includes visualizations of content trends, genre distribution, and release patterns.',
       previewDescription: 'This project performs an in-depth exploratory data analysis (EDA) on the Netflix dataset. Using Python with Pandas, Matplotlib, and Seaborn, it uncovers insights about content distribution by genre, country, release year, and rating. The analysis includes visualizations such as bar charts, heatmaps, and trend lines to understand how Netflix\'s catalog has evolved over time. It also explores the balance between Movies and TV Shows and identifies the most prolific directors and actors on the platform.',
+      carouselImages: [
+        '/chart_movies_vs_tvshows.png',
+        '/chart_top10_genres.png',
+        '/chart_titles_over_years.png',
+      ],
       technologies: ['Python', 'Pandas', 'Matplotlib', 'Seaborn'],
       image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=800&q=80',
       github: 'https://github.com/julibucci/Netflix-Data-Analysis',
@@ -49,46 +54,6 @@ export function Projects() {
         '/mealmaster/mealmaster_9.jpeg',
       ]
     },
-    {
-      title: 'Real-Time Data Pipeline',
-      description: 'ETL pipeline for real-time data processing with Apache Kafka. SQL query optimization reducing response time by 70%.',
-      technologies: ['Python', 'Apache Kafka', 'PostgreSQL', 'Redis'],
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
-      github: 'https://github.com',
-      demo: 'https://example.com'
-    },
-    {
-      title: 'Scalable REST API',
-      description: 'RESTful API with JWT authentication, rate limiting, and Swagger documentation. Caching implementation and critical endpoint optimization.',
-      technologies: ['FastAPI', 'PostgreSQL', 'Docker', 'AWS'],
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
-      github: 'https://github.com',
-      demo: 'https://example.com'
-    },
-    {
-      title: 'CI/CD Automation',
-      description: 'Automated continuous integration and deployment pipeline with unit testing, static code analysis, and multi-environment deployment.',
-      technologies: ['GitHub Actions', 'Jest', 'SonarQube', 'Terraform'],
-      image: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800&q=80',
-      github: 'https://github.com',
-      demo: 'https://example.com'
-    },
-    {
-      title: 'Monitoring System',
-      description: 'Observability platform with distributed metrics, logs, and traces. Automatic alerts and custom dashboards for SRE teams.',
-      technologies: ['Prometheus', 'Grafana', 'ELK Stack', 'Jaeger'],
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
-      github: 'https://github.com',
-      demo: 'https://example.com'
-    },
-    {
-      title: 'Machine Learning API',
-      description: 'ML model for data classification deployed as an API with versioning, A/B testing, and model performance monitoring.',
-      technologies: ['TensorFlow', 'Flask', 'MLflow', 'Docker'],
-      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80',
-      github: 'https://github.com',
-      demo: 'https://example.com'
-    }
   ];
 
   return (
@@ -96,7 +61,7 @@ export function Projects() {
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-100 dark:bg-blue-900/20 rounded-full filter blur-3xl opacity-30" />
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-slate-900 dark:text-white mb-4">Featured Projects</h2>
+          <h2 className="text-slate-900 dark:text-white mb-4">Projects</h2>
           <div className="h-1 w-20 bg-gradient-to-r from-[#5C3317] to-[#8B4513] mx-auto rounded-full mb-6" />
         </div>
 
@@ -200,7 +165,7 @@ export function Projects() {
                     <img
                       src={selectedProject.carouselImages[carouselIndex]}
                       alt={`Screenshot ${carouselIndex + 1}`}
-                      className="w-full h-64 object-cover"
+                      className="w-full h-96 object-contain bg-white dark:bg-slate-900"
                     />
                   </div>
                   <button
