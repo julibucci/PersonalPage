@@ -54,10 +54,37 @@ export function Projects() {
         '/mealmaster/mealmaster_9.jpeg',
       ]
     },
+    {
+      title: 'Coffee Place',
+      description: 'Java-based coffee shop management system handling employees, recipes, inventory, and sales reporting using JSON for data processing.',
+      previewDescription: 'Coffee Place is a Java application designed to manage the daily operations of a coffee shop. It covers employee management (adding, updating, and listing staff), recipe and menu administration, stock and inventory control, and the generation of detailed sales reports.\n\nAll data is handled in JSON format using the java-json library, making it easy to serialize, store, and exchange information. The system is fully built in Java following object-oriented principles, with a clean separation of responsibilities across classes to keep the codebase maintainable and extensible.',
+      technologies: ['Java', 'JSON', 'OOP'],
+      image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80',
+      github: 'https://github.com/julibucci/cofeePlace',
+      demo: ''
+    },
+    {
+      title: 'Vehicle Hierarchy MySQL',
+      description: 'Java application modeling a vehicle hierarchy with MySQL, implementing OOP inheritance, DAO pattern, XML validation, and database connection pooling.',
+      previewDescription: 'Vehicle Hierarchy MySQL is a Java project that demonstrates how to map object-oriented class hierarchies to a relational database using MySQL. The system models different vehicle types (trucks, buses, airplanes, and more) using inheritance relationships reflected in the database schema through one-to-one and one-to-many table associations.\n\nThe project follows a layered architecture: a Data Access Layer with a generic IGenericDAO interface and AbstractDAOClass handles all CRUD operations, while a Service Layer (VehicleServiceImpl) abstracts business logic from direct database access.\n\nAdditionally, the project includes XML processing features such as validation against XSD schemas and XML parsing to load vehicle data from structured files. Database connection pooling is managed through Apache Commons DBCP for optimized performance.',
+      technologies: ['Java', 'MySQL', 'JDBC', 'XML', 'OOP', 'DAO'],
+      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80',
+      github: 'https://github.com/julibucci/Vehicle-Hierarchy-mySQL',
+      demo: ''
+    },
+    {
+      title: 'Gestión de Pedidos API',
+      description: 'Java-based order management API modeling orders and line items with OOP principles, JSON serialization, and a clean layered structure.',
+      previewDescription: 'Gestión de Pedidos is a Java application that simulates a RESTful order management system. It models the core entities involved in processing orders: each Pedido (order) holds a unique ID, a customer name, and a list of ItemPedido objects representing the individual products ordered.\n\nEach ItemPedido stores the product name, quantity, and unit price, following a clean DTO pattern. The project uses a JsonUtiles utility class to handle JSON serialization and deserialization, enabling structured data exchange. The architecture follows object-oriented principles with a clear separation between model classes and business logic, making the codebase easy to extend with additional endpoints or persistence layers.',
+      technologies: ['Java', 'JSON', 'OOP', 'REST API'],
+      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80',
+      github: 'https://github.com/julibucci/Gestion-pedidos---API',
+      demo: ''
+    },
   ];
 
   return (
-    <section id="proyectos" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#c8c9a0] dark:bg-slate-900 relative overflow-hidden">
+    <section id="proyectos" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#e8ddd0] dark:bg-slate-900 relative overflow-hidden">
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-100 dark:bg-blue-900/20 rounded-full filter blur-3xl opacity-30" />
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-16">
