@@ -7,7 +7,10 @@ export function Footer() {
       <div className="max-w-6xl mx-auto relative z-10">
 
         <div className="flex flex-col items-center gap-6 mb-10">
-          <h3 className="text-[#e8ddd0] text-xl font-semibold">Julieta Bucci</h3>
+          <h3 className="text-5xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className="text-[#e8ddd0]">Julieta </span>
+            <span className="text-[#e8856a]">Bucci</span>
+          </h3>
           <p className="text-[#b89a7a] text-sm">Software Engineer</p>
 
           <div className="flex items-center gap-2 text-[#b89a7a] text-sm">
@@ -15,7 +18,7 @@ export function Footer() {
             <span>Mar del Plata, Argentina</span>
           </div>
 
-          <a href="mailto:julieta.bucci39@gmail.com" className="text-[#b89a7a] hover:text-[#e8ddd0] transition-colors text-sm">
+          <a href="mailto:julieta.bucci39@gmail.com" className="text-yellow-400 hover:text-yellow-300 transition-colors text-sm">
             julieta.bucci39@gmail.com
           </a>
 
