@@ -8,9 +8,16 @@ export function Header() {
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
-    element?.scrollIntoView({ behavior: 'smooth' });
+    if (element) {
+      const offset = 90;
+      const top = element.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
     setIsMenuOpen(false);
   };
+
+  const navBtn = "px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative group rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30";
+  const underline = <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>;
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-50 border-b border-slate-200/60 dark:border-slate-700/60 shadow-sm">
@@ -30,24 +37,20 @@ export function Header() {
 
           <div className="hidden md:block">
             <div className="flex items-center gap-1">
-              <button onClick={() => scrollToSection('inicio')} className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative group rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30">
-                Home
-                <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+              <button onClick={() => scrollToSection('inicio')} className={navBtn}>
+                Home{underline}
               </button>
-              <button onClick={() => scrollToSection('sobre-mi')} className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative group rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30">
-                About me
-                <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+              <button onClick={() => scrollToSection('sobre-mi')} className={navBtn}>
+                About me{underline}
               </button>
-              <button onClick={() => scrollToSection('habilidades')} className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative group rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30">
-                Skills
-                <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+              <button onClick={() => scrollToSection('education')} className={navBtn}>
+                Education & Certifications{underline}
               </button>
-              <button onClick={() => scrollToSection('proyectos')} className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative group rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30">
-                Projects
-                <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+              <button onClick={() => scrollToSection('habilidades')} className={navBtn}>
+                Skills{underline}
               </button>
-              <button onClick={() => scrollToSection('contacto')} className="ml-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-sm hover:shadow-md">
-                Contact
+              <button onClick={() => scrollToSection('proyectos')} className={navBtn}>
+                Projects{underline}
               </button>
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -85,14 +88,14 @@ export function Header() {
               <button onClick={() => scrollToSection('sobre-mi')} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left px-4 py-2 rounded-lg">
                 About me
               </button>
+              <button onClick={() => scrollToSection('education')} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left px-4 py-2 rounded-lg">
+                Education & Certifications
+              </button>
               <button onClick={() => scrollToSection('habilidades')} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left px-4 py-2 rounded-lg">
                 Skills
               </button>
               <button onClick={() => scrollToSection('proyectos')} className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left px-4 py-2 rounded-lg">
                 Projects
-              </button>
-              <button onClick={() => scrollToSection('contacto')} className="text-white bg-gradient-to-r from-blue-600 to-indigo-600 transition-colors text-left px-4 py-2 rounded-lg">
-                Contact
               </button>
             </div>
           </div>

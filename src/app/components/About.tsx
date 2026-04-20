@@ -54,7 +54,7 @@ export function About() {
           </div>
         </div>
 
-        <div className="bg-[#d4d9b8] dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-lg mb-8">
+        <div id="education" className="bg-[#f0c4a8] dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-lg mb-8">
           <h3 className="text-slate-900 dark:text-white mb-8 flex items-center gap-3">
             <div className="w-1 h-8 bg-gradient-to-b from-[#5C3317] to-[#8B4513] rounded-full" />
             Education
@@ -85,7 +85,7 @@ export function About() {
           </div>
         </div>
 
-        <div className="bg-[#d4d9b8] dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-lg mb-16">
+        <div id="certifications" className="bg-[#f0c4a8] dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-lg mb-16">
           <h3 className="text-slate-900 dark:text-white mb-8 flex items-center gap-3">
             <div className="w-1 h-8 bg-gradient-to-b from-[#5C3317] to-[#8B4513] rounded-full" />
             Certifications
