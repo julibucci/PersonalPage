@@ -1,5 +1,4 @@
 import { Code2, Layers, Server, Database, Wrench } from 'lucide-react';
-import skillsBg from '../../imports/fondo1.jpeg';
 
 export function Skills() {
   const skillCategories = [
@@ -50,16 +49,6 @@ export function Skills() {
       id="habilidades"
       className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#e8ddd0] dark:bg-slate-950"
     >
-      <div
-        className="absolute inset-10"
-        style={{
-          backgroundImage: `url(${skillsBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          borderRadius: '60% 40% 55% 45% / 45% 55% 40% 60%',
-          opacity: 0.35,
-        }}
-      />
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-indigo-100 dark:bg-indigo-900/20 rounded-full filter blur-3xl opacity-20" />
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-16">
