@@ -1,16 +1,25 @@
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LetterRollMenu } from './LetterRollMenu';
+import { ThemeToggle } from './ThemeToggle';
 
-const sections = ['inicio', 'sobre-mi', 'education', 'habilidades', 'proyectos'];
+const sections = ['inicio', 'proyectos', 'sobre-mi', 'experience', 'education', 'habilidades'];
+const labels: Record<string, string> = {
+  inicio:     'Home',
+  'sobre-mi': 'About me',
+  experience: 'Experience',
+  education:  'Education & Certifications',
+  habilidades:'Skills',
+  proyectos:  'Projects',
+};
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('inicio');
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    const handleScroll = () => {
+    const onScroll = () => {
       const scrollY = window.scrollY + 120;
       let current = 'inicio';
       for (const id of sections) {
@@ -19,107 +28,129 @@ export function Header() {
       }
       setActiveSection(current);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 90;
-      const top = element.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top, behavior: 'smooth' });
-    }
+    const el = document.getElementById(id);
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 90, behavior: 'smooth' });
     setIsMenuOpen(false);
   };
 
-  const navBtn = (id: string) =>
-    `px-4 py-2 transition-colors relative group rounded-lg text-sm font-medium ` +
-    (activeSection === id
-      ? 'text-[#8B4513] dark:text-amber-400 bg-[#f0e0d0] dark:bg-amber-900/30'
-      : 'text-slate-600 dark:text-slate-300 hover:text-[#8B4513] dark:hover:text-amber-400 hover:bg-[#f0e0d0] dark:hover:bg-amber-900/20');
-
-  const underline = (id: string) => (
-    <span className={`absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-[#8B4513] to-[#c4956a] transition-transform origin-left ${activeSection === id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
-  );
-
-  const mobileBtn = (id: string) =>
-    `transition-colors text-left px-4 py-2 rounded-lg text-sm font-medium ` +
-    (activeSection === id
-      ? 'text-[#8B4513] dark:text-amber-400 bg-[#f0e0d0] dark:bg-amber-900/30'
-      : 'text-slate-600 dark:text-slate-300 hover:text-[#8B4513] dark:hover:text-amber-400 hover:bg-[#f0e0d0] dark:hover:bg-amber-900/20');
-
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-50 border-b border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+    <motion.header
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-slate-900/75 backdrop-blur-xl z-50 border-b border-slate-200/60 dark:border-slate-700/60 shadow-sm"
+    >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <div className="flex-shrink-0">
-            <div className="flex items-center gap-3">
-              <img src="/favicon.svg" alt="logo" className="w-10 h-10" />
-              <div className="hidden sm:block">
-                <div className="text-slate-900 dark:text-white font-semibold">Julieta Bucci</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">Software Engineer</div>
-              </div>
-            </div>
-          </div>
 
-          <div className="hidden md:block">
-            <div className="flex items-center gap-1">
-              <button onClick={() => scrollToSection('inicio')} className={navBtn('inicio')}>
-                Home{underline('inicio')}
-              </button>
-              <button onClick={() => scrollToSection('sobre-mi')} className={navBtn('sobre-mi')}>
-                About me{underline('sobre-mi')}
-              </button>
-              <button onClick={() => scrollToSection('education')} className={navBtn('education')}>
-                Education & Certifications{underline('education')}
-              </button>
-              <button onClick={() => scrollToSection('habilidades')} className={navBtn('habilidades')}>
-                Skills{underline('habilidades')}
-              </button>
-              <button onClick={() => scrollToSection('proyectos')} className={navBtn('proyectos')}>
-                Projects{underline('proyectos')}
-              </button>
-              <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="ml-2 p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                aria-label="Toggle dark mode"
+          {/* Desktop nav — spans the full bar */}
+          <div className="hidden md:flex items-center justify-between flex-1 mr-4">
+            {sections.map((id, i) => (
+              <motion.button
+                key={id}
+                onClick={() => scrollToSection(id)}
+                className={`group relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeSection === id
+                    ? 'text-[#8B4513] dark:text-[#e8856a]'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-[#8B4513] dark:hover:text-[#e8856a]'
+                }`}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + i * 0.06, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ backgroundColor: 'rgba(240,224,208,0.5)' }}
+                whileTap={{ scale: 0.96 }}
               >
-                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-            </div>
+                <LetterRollMenu text={labels[id]} />
+                {activeSection === id && (
+                  <motion.span
+                    layoutId="activeNavIndicator"
+                    className="absolute bottom-0.5 left-3 right-3 h-0.5 rounded-full bg-gradient-to-r from-[#8B4513] to-[#c4956a]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </motion.button>
+            ))}
           </div>
 
-          <div className="md:hidden flex items-center gap-2">
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="text-slate-600 dark:text-slate-300 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {theme === 'dark' ? <Sun size={22} /> : <Moon size={22} />}
-            </button>
-            <button
+          {/* Theme toggle — desktop */}
+          <motion.div
+            className="hidden md:block ml-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.58 }}
+          >
+            <ThemeToggle />
+          </motion.div>
+
+          {/* Mobile controls */}
+          <div className="md:hidden flex items-center gap-2 ml-auto">
+            <ThemeToggle />
+            <motion.button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-slate-600 dark:text-slate-300 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              whileTap={{ scale: 0.9 }}
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={isMenuOpen ? 'close' : 'open'}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ display: 'block' }}
+                >
+                  {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </motion.span>
+              </AnimatePresence>
+            </motion.button>
           </div>
         </div>
 
-        {isMenuOpen && (
-          <div className="md:hidden pb-4 border-t border-slate-200 dark:border-slate-700 mt-2 pt-4">
-            <div className="flex flex-col gap-2">
-              <button onClick={() => scrollToSection('inicio')} className={mobileBtn('inicio')}>Home</button>
-              <button onClick={() => scrollToSection('sobre-mi')} className={mobileBtn('sobre-mi')}>About me</button>
-              <button onClick={() => scrollToSection('education')} className={mobileBtn('education')}>Education & Certifications</button>
-              <button onClick={() => scrollToSection('habilidades')} className={mobileBtn('habilidades')}>Skills</button>
-              <button onClick={() => scrollToSection('proyectos')} className={mobileBtn('proyectos')}>Projects</button>
-            </div>
-          </div>
-        )}
+        {/* Mobile drawer */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              className="md:hidden overflow-hidden border-t border-slate-200 dark:border-slate-700"
+            >
+              <motion.div
+                className="pb-4 pt-3 flex flex-col gap-1"
+                initial="hidden"
+                animate="visible"
+                variants={{ visible: { transition: { staggerChildren: 0.055 } } }}
+              >
+                {sections.map((id) => (
+                  <motion.button
+                    key={id}
+                    onClick={() => scrollToSection(id)}
+                    className={`text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                      activeSection === id
+                        ? 'text-[#8B4513] dark:text-[#e8856a] bg-[#f0e0d0] dark:bg-[#8B4513]/30'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-[#8B4513] dark:hover:text-[#e8856a] hover:bg-[#f0e0d0] dark:hover:bg-[#8B4513]/20'
+                    }`}
+                    variants={{
+                      hidden:  { opacity: 0, x: -14 },
+                      visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } },
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    {labels[id]}
+                  </motion.button>
+                ))}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
-    </header>
+    </motion.header>
   );
 }

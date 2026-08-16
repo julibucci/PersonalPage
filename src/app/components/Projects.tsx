@@ -1,5 +1,6 @@
 import { ExternalLink, Github, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Project {
   title: string;
@@ -12,229 +13,456 @@ interface Project {
   carouselImages?: string[];
 }
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+const VP   = { once: true, margin: '0px 0px -80px 0px' } as const;
+
+const projects: Project[] = [
+  {
+    title: 'Netflix Data Analysis',
+    description: 'Exploratory data analysis of the Netflix catalog using Python. Includes visualizations of content trends, genre distribution, and release patterns.',
+    previewDescription: "This project performs an in-depth exploratory data analysis (EDA) on the Netflix dataset. Using Python with Pandas, Matplotlib, and Seaborn, it uncovers insights about content distribution by genre, country, release year, and rating. The analysis includes visualizations such as bar charts, heatmaps, and trend lines to understand how Netflix's catalog has evolved over time. It also explores the balance between Movies and TV Shows and identifies the most prolific directors and actors on the platform.",
+    carouselImages: ['/chart_movies_vs_tvshows.png', '/chart_top10_genres.png', '/chart_titles_over_years.png'],
+    technologies: ['Python', 'Pandas', 'Matplotlib', 'Seaborn'],
+    image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=800&q=80',
+    github: 'https://github.com/julibucci/Netflix-Data-Analysis',
+    demo: '',
+  },
+  {
+    title: 'MealMaster Project',
+    description: 'Recipe management system with user profiles, favorites, comments, and PayPal integration for premium subscriptions with advanced meal planning features.',
+    previewDescription: 'MealMaster is a full-stack recipe management application built with Angular. Users can register and manage their personal profiles, browse a wide variety of recipes fetched from the MealDB API, save their favorites, and interact through comments on recipes.\n\nThe application has two types of users: common users and premium users. Common users can explore recipes, manage their profile, and save favorites. Premium users, who upgrade their plan through PayPal integration, unlock exclusive features such as creating personalized meal plans, filtering recipes by available ingredients, and accessing advanced content.\n\nThe backend is powered by Node.js with Express and JSON Server for data management, while the frontend is built with Angular and Bootstrap for a fully responsive and modern UI.',
+    technologies: ['Angular', 'JavaScript', 'HTML', 'CSS', 'Bootstrap', 'Node.js', 'Express'],
+    image: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=800&q=80',
+    github: 'https://github.com/julibucci/MealMaster-Project',
+    demo: '',
+    carouselImages: [
+      '/mealmaster/mealmaster_1.jpeg', '/mealmaster/mealmaster_2.jpeg', '/mealmaster/mealmaster_3.jpeg',
+      '/mealmaster/mealmaster_4.jpeg', '/mealmaster/mealmaster_5.jpeg', '/mealmaster/mealmaster_6.jpeg',
+      '/mealmaster/mealmaster_7.jpeg', '/mealmaster/mealmaster_8.jpeg', '/mealmaster/mealmaster_9.jpeg',
+    ],
+  },
+  {
+    title: 'Coffee Place',
+    description: 'Java-based coffee shop management system handling employees, recipes, inventory, and sales reporting using JSON for data processing.',
+    previewDescription: 'Coffee Place is a Java application designed to manage the daily operations of a coffee shop. It covers employee management (adding, updating, and listing staff), recipe and menu administration, stock and inventory control, and the generation of detailed sales reports.\n\nAll data is handled in JSON format using the java-json library, making it easy to serialize, store, and exchange information. The system is fully built in Java following object-oriented principles, with a clean separation of responsibilities across classes to keep the codebase maintainable and extensible.',
+    technologies: ['Java', 'JSON', 'OOP'],
+    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80',
+    github: 'https://github.com/julibucci/cofeePlace',
+    demo: '',
+  },
+  {
+    title: 'Vehicle Hierarchy MySQL',
+    description: 'Java application modeling a vehicle hierarchy with MySQL, implementing OOP inheritance, DAO pattern, XML validation, and database connection pooling.',
+    previewDescription: 'Vehicle Hierarchy MySQL is a Java project that demonstrates how to map object-oriented class hierarchies to a relational database using MySQL. The system models different vehicle types (trucks, buses, airplanes, and more) using inheritance relationships reflected in the database schema through one-to-one and one-to-many table associations.\n\nThe project follows a layered architecture: a Data Access Layer with a generic IGenericDAO interface and AbstractDAOClass handles all CRUD operations, while a Service Layer (VehicleServiceImpl) abstracts business logic from direct database access.\n\nAdditionally, the project includes XML processing features such as validation against XSD schemas and XML parsing to load vehicle data from structured files. Database connection pooling is managed through Apache Commons DBCP for optimized performance.',
+    technologies: ['Java', 'MySQL', 'JDBC', 'XML', 'OOP', 'DAO'],
+    image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80',
+    github: 'https://github.com/julibucci/Vehicle-Hierarchy-mySQL',
+    demo: '',
+  },
+  {
+    title: 'Gestión de Pedidos API',
+    description: 'Java-based order management API modeling orders and line items with OOP principles, JSON serialization, and a clean layered structure.',
+    previewDescription: 'Gestión de Pedidos is a Java application that simulates a RESTful order management system. It models the core entities involved in processing orders: each Pedido (order) holds a unique ID, a customer name, and a list of ItemPedido objects representing the individual products ordered.\n\nEach ItemPedido stores the product name, quantity, and unit price, following a clean DTO pattern. The project uses a JsonUtiles utility class to handle JSON serialization and deserialization, enabling structured data exchange. The architecture follows object-oriented principles with a clear separation between model classes and business logic, making the codebase easy to extend with additional endpoints or persistence layers.',
+    technologies: ['Java', 'JSON', 'OOP', 'REST API'],
+    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80',
+    github: 'https://github.com/julibucci/Gestion-pedidos---API',
+    demo: '',
+  },
+];
+
+// 3D axis carousel tuning
+const CARD_W  = 560;
+const SPACING = 420;
+const DEPTH   = 320;
+const ANGLE   = 30;
+
+function getOffset(i: number, center: number, total: number) {
+  let diff = i - center;
+  if (diff > total / 2) diff -= total;
+  if (diff < -total / 2) diff += total;
+  return diff;
+}
+
 export function Projects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [centerIndex, setCenterIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const prevSlide = (total: number) => setCarouselIndex(i => (i - 1 + total) % total);
-  const nextSlide = (total: number) => setCarouselIndex(i => (i + 1) % total);
+  const openProject = (p: Project) => { setSelectedProject(p); setCarouselIndex(0); };
 
-  const projects: Project[] = [
-    {
-      title: 'Netflix Data Analysis',
-      description: 'Exploratory data analysis of the Netflix catalog using Python. Includes visualizations of content trends, genre distribution, and release patterns.',
-      previewDescription: 'This project performs an in-depth exploratory data analysis (EDA) on the Netflix dataset. Using Python with Pandas, Matplotlib, and Seaborn, it uncovers insights about content distribution by genre, country, release year, and rating. The analysis includes visualizations such as bar charts, heatmaps, and trend lines to understand how Netflix\'s catalog has evolved over time. It also explores the balance between Movies and TV Shows and identifies the most prolific directors and actors on the platform.',
-      carouselImages: [
-        '/chart_movies_vs_tvshows.png',
-        '/chart_top10_genres.png',
-        '/chart_titles_over_years.png',
-      ],
-      technologies: ['Python', 'Pandas', 'Matplotlib', 'Seaborn'],
-      image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=800&q=80',
-      github: 'https://github.com/julibucci/Netflix-Data-Analysis',
-      demo: ''
-    },
-    {
-      title: 'MealMaster Project',
-      description: 'Recipe management system with user profiles, favorites, comments, and PayPal integration for premium subscriptions with advanced meal planning features.',
-      previewDescription: 'MealMaster is a full-stack recipe management application built with Angular. Users can register and manage their personal profiles, browse a wide variety of recipes fetched from the MealDB API, save their favorites, and interact through comments on recipes.\n\nThe application has two types of users: common users and premium users. Common users can explore recipes, manage their profile, and save favorites. Premium users, who upgrade their plan through PayPal integration, unlock exclusive features such as creating personalized meal plans, filtering recipes by available ingredients, and accessing advanced content.\n\nThe backend is powered by Node.js with Express and JSON Server for data management, while the frontend is built with Angular and Bootstrap for a fully responsive and modern UI.',
-      technologies: ['Angular', 'JavaScript', 'HTML', 'CSS', 'Bootstrap', 'Node.js', 'Express'],
-      image: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=800&q=80',
-      github: 'https://github.com/julibucci/MealMaster-Project',
-      demo: '',
-      carouselImages: [
-        '/mealmaster/mealmaster_1.jpeg',
-        '/mealmaster/mealmaster_2.jpeg',
-        '/mealmaster/mealmaster_3.jpeg',
-        '/mealmaster/mealmaster_4.jpeg',
-        '/mealmaster/mealmaster_5.jpeg',
-        '/mealmaster/mealmaster_6.jpeg',
-        '/mealmaster/mealmaster_7.jpeg',
-        '/mealmaster/mealmaster_8.jpeg',
-        '/mealmaster/mealmaster_9.jpeg',
-      ]
-    },
-    {
-      title: 'Coffee Place',
-      description: 'Java-based coffee shop management system handling employees, recipes, inventory, and sales reporting using JSON for data processing.',
-      previewDescription: 'Coffee Place is a Java application designed to manage the daily operations of a coffee shop. It covers employee management (adding, updating, and listing staff), recipe and menu administration, stock and inventory control, and the generation of detailed sales reports.\n\nAll data is handled in JSON format using the java-json library, making it easy to serialize, store, and exchange information. The system is fully built in Java following object-oriented principles, with a clean separation of responsibilities across classes to keep the codebase maintainable and extensible.',
-      technologies: ['Java', 'JSON', 'OOP'],
-      image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80',
-      github: 'https://github.com/julibucci/cofeePlace',
-      demo: ''
-    },
-    {
-      title: 'Vehicle Hierarchy MySQL',
-      description: 'Java application modeling a vehicle hierarchy with MySQL, implementing OOP inheritance, DAO pattern, XML validation, and database connection pooling.',
-      previewDescription: 'Vehicle Hierarchy MySQL is a Java project that demonstrates how to map object-oriented class hierarchies to a relational database using MySQL. The system models different vehicle types (trucks, buses, airplanes, and more) using inheritance relationships reflected in the database schema through one-to-one and one-to-many table associations.\n\nThe project follows a layered architecture: a Data Access Layer with a generic IGenericDAO interface and AbstractDAOClass handles all CRUD operations, while a Service Layer (VehicleServiceImpl) abstracts business logic from direct database access.\n\nAdditionally, the project includes XML processing features such as validation against XSD schemas and XML parsing to load vehicle data from structured files. Database connection pooling is managed through Apache Commons DBCP for optimized performance.',
-      technologies: ['Java', 'MySQL', 'JDBC', 'XML', 'OOP', 'DAO'],
-      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80',
-      github: 'https://github.com/julibucci/Vehicle-Hierarchy-mySQL',
-      demo: ''
-    },
-    {
-      title: 'Gestión de Pedidos API',
-      description: 'Java-based order management API modeling orders and line items with OOP principles, JSON serialization, and a clean layered structure.',
-      previewDescription: 'Gestión de Pedidos is a Java application that simulates a RESTful order management system. It models the core entities involved in processing orders: each Pedido (order) holds a unique ID, a customer name, and a list of ItemPedido objects representing the individual products ordered.\n\nEach ItemPedido stores the product name, quantity, and unit price, following a clean DTO pattern. The project uses a JsonUtiles utility class to handle JSON serialization and deserialization, enabling structured data exchange. The architecture follows object-oriented principles with a clear separation between model classes and business logic, making the codebase easy to extend with additional endpoints or persistence layers.',
-      technologies: ['Java', 'JSON', 'OOP', 'REST API'],
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80',
-      github: 'https://github.com/julibucci/Gestion-pedidos---API',
-      demo: ''
-    },
-  ];
+  const prevSlide = (total: number) => {
+    setDirection(-1);
+    setCarouselIndex(i => (i - 1 + total) % total);
+  };
+  const nextSlide = (total: number) => {
+    setDirection(1);
+    setCarouselIndex(i => (i + 1) % total);
+  };
+
+  const prevProject = () => setCenterIndex(i => (i - 1 + projects.length) % projects.length);
+  const nextProject = () => setCenterIndex(i => (i + 1) % projects.length);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const id = setInterval(() => setCenterIndex(i => (i + 1) % projects.length), 4500);
+    return () => clearInterval(id);
+  }, [isPaused]);
 
   return (
-    <section id="proyectos" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#d9c9b4] dark:bg-slate-900 relative overflow-hidden">
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-100 dark:bg-blue-900/20 rounded-full filter blur-3xl opacity-30" />
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div className="text-left mb-16">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#4a7c59] dark:text-[#6aaa80] mb-3">04 — Projects</p>
-          <h2 className="text-slate-900 dark:text-white mb-4 text-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>Projects</h2>
-          <div className="h-1 w-20 bg-gradient-to-r from-[#5C3317] to-[#8B4513] rounded-full mb-6" />
-        </div>
+    <section
+      id="proyectos"
+      className="py-24 px-4 sm:px-6 lg:px-8 bg-[#e8ddd0] dark:bg-slate-900/55 dark:backdrop-blur-sm relative overflow-hidden"
+    >
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#8B4513]/10 rounded-full filter blur-3xl opacity-30" />
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <div key={index} className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-amber-300 dark:hover:border-amber-700 transition-all hover:shadow-2xl group">
-              <div className="aspect-video bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="p-6">
-                <h3 className="text-slate-900 dark:text-white mb-3">{project.title}</h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm mb-4 leading-relaxed">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.technologies.map((tech, techIndex) => (
-                    <span
-                      key={techIndex}
-                      className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs rounded-lg border border-slate-200 dark:border-slate-600"
+      <div className="max-w-6xl mx-auto relative z-10">
+        {/* Header */}
+        <motion.div
+          className="text-left mb-4"
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={VP}
+          transition={{ duration: 0.65, ease: EASE }}
+        >
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#8B4513] dark:text-[#c4956a] mb-3">
+            01 — Projects
+          </p>
+          <h2
+            className="text-slate-900 dark:text-white mb-4 text-5xl"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Projects
+          </h2>
+          <motion.div
+            className="h-1 w-0 bg-gradient-to-r from-[#5C3317] to-[#8B4513] rounded-full"
+            whileInView={{ width: '5rem' }}
+            viewport={VP}
+            transition={{ duration: 0.7, delay: 0.2, ease: EASE }}
+          />
+        </motion.div>
+
+        {/* 3D Axis Carousel */}
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={VP}
+          transition={{ duration: 0.65, ease: EASE }}
+        >
+          <div
+            className="relative"
+            style={{ height: 760 }}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            <div className="relative w-full h-full" style={{ perspective: 2200 }}>
+              <motion.div
+                className="relative w-full h-full"
+                style={{ transformStyle: 'preserve-3d', cursor: 'grab', touchAction: 'pan-y' }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.18}
+                whileTap={{ cursor: 'grabbing' }}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x < -70) nextProject();
+                  else if (info.offset.x > 70) prevProject();
+                }}
+              >
+                {projects.map((project, i) => {
+                  const diff = getOffset(i, centerIndex, projects.length);
+                  const abs = Math.abs(diff);
+                  const isCenter = diff === 0;
+                  if (abs > 2) return null;
+
+                  return (
+                    <motion.div
+                      key={project.title}
+                      className="absolute bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xl"
+                      style={{ width: CARD_W, left: '50%', top: '50%', y: '-50%', zIndex: 50 - abs * 10 }}
+                      animate={{
+                        x: -CARD_W / 2 + diff * SPACING,
+                        z: -abs * DEPTH,
+                        rotateY: -diff * ANGLE,
+                        scale: Math.max(1 - abs * 0.16, 0.62),
+                        opacity: 1 - abs * 0.32,
+                      }}
+                      transition={{ type: 'spring', stiffness: 260, damping: 28 }}
+                      onClick={() => !isCenter && setCenterIndex(i)}
                     >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-[#8B4513] dark:hover:text-amber-400 transition-colors text-sm"
-                  >
-                    <Github size={16} />
-                    Code
-                  </a>
-                  {project.previewDescription && (
-                    <button
-                      onClick={() => { setSelectedProject(project); setCarouselIndex(0); }}
-                      className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-[#8B4513] dark:hover:text-amber-400 transition-colors text-sm"
-                    >
-                      <ExternalLink size={16} />
-                      Preview
-                    </button>
-                  )}
-                  {!project.previewDescription && project.demo && (
-                    <a
-                      href={project.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-[#8B4513] dark:hover:text-amber-400 transition-colors text-sm"
-                    >
-                      <ExternalLink size={16} />
-                      Demo
-                    </a>
-                  )}
-                </div>
-              </div>
+                      {/* Thumbnail */}
+                      <div className="aspect-video bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
+                        <img src={project.image} alt={project.title} className="w-full h-full object-cover" draggable={false} />
+                        {!isCenter && <div className="absolute inset-0 bg-slate-900/40" />}
+                      </div>
+
+                      {/* Content */}
+                      <div className={isCenter ? 'p-6' : 'p-4 pointer-events-none'}>
+                        <h3 className="text-slate-900 dark:text-white mb-1 text-base sm:text-lg">{project.title}</h3>
+
+                        {isCenter && (
+                          <>
+                            <p className="text-slate-600 dark:text-slate-300 text-sm mb-4 leading-relaxed">
+                              {project.description}
+                            </p>
+                            <div className="flex flex-wrap gap-2 mb-6">
+                              {project.technologies.map((tech, ti) => (
+                                <motion.span
+                                  key={ti}
+                                  className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs rounded-lg border border-slate-200 dark:border-slate-600"
+                                  whileHover={{ scale: 1.08, y: -1 }}
+                                  transition={{ type: 'spring', stiffness: 380, damping: 16 }}
+                                >
+                                  {tech}
+                                </motion.span>
+                              ))}
+                            </div>
+                            <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                              <motion.a
+                                href={project.github}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300 text-sm"
+                                whileHover={{ color: '#8B4513', x: 2 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                <Github size={16} /> Code
+                              </motion.a>
+                              {project.previewDescription && (
+                                <motion.button
+                                  onClick={() => openProject(project)}
+                                  className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300 text-sm"
+                                  whileHover={{ color: '#8B4513', x: 2 }}
+                                  whileTap={{ scale: 0.97 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <ExternalLink size={16} /> Preview
+                                </motion.button>
+                              )}
+                              {!project.previewDescription && project.demo && (
+                                <motion.a
+                                  href={project.demo}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300 text-sm"
+                                  whileHover={{ color: '#8B4513', x: 2 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <ExternalLink size={16} /> Demo
+                                </motion.a>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
             </div>
-          ))}
-        </div>
+
+            {/* Prev / next */}
+            <motion.button
+              onClick={prevProject}
+              aria-label="Previous project"
+              className="absolute left-0 sm:left-2 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-slate-700/90 rounded-full p-2.5 shadow-lg border border-slate-200 dark:border-slate-600"
+              whileHover={{ scale: 1.12, x: -2 }}
+              whileTap={{ scale: 0.92 }}
+            >
+              <ChevronLeft size={22} className="text-slate-700 dark:text-white" />
+            </motion.button>
+            <motion.button
+              onClick={nextProject}
+              aria-label="Next project"
+              className="absolute right-0 sm:right-2 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-slate-700/90 rounded-full p-2.5 shadow-lg border border-slate-200 dark:border-slate-600"
+              whileHover={{ scale: 1.12, x: 2 }}
+              whileTap={{ scale: 0.92 }}
+            >
+              <ChevronRight size={22} className="text-slate-700 dark:text-white" />
+            </motion.button>
+          </div>
+
+          {/* Dots */}
+          <div className="flex justify-center gap-2 mt-6">
+            {projects.map((_, i) => (
+              <motion.button
+                key={i}
+                onClick={() => setCenterIndex(i)}
+                aria-label={`Go to project ${i + 1}`}
+                className="h-2 rounded-full"
+                animate={{
+                  width: i === centerIndex ? '1.75rem' : '0.5rem',
+                  backgroundColor: i === centerIndex ? '#8B4513' : '#cbd5e1',
+                }}
+                transition={{ duration: 0.25 }}
+              />
+            ))}
+          </div>
+        </motion.div>
       </div>
 
-      {/* Modal */}
-      {selectedProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedProject(null)}>
-          <div
-            className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={e => e.stopPropagation()}
+      {/* ── Modal ── */}
+      <AnimatePresence>
+        {selectedProject && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            onClick={() => setSelectedProject(null)}
           >
-            <div className="aspect-video overflow-hidden rounded-t-2xl">
-              <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-full object-cover" />
-            </div>
-            <div className="p-8">
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-slate-900 dark:text-white text-xl font-semibold">{selectedProject.title}</h3>
-                <button onClick={() => setSelectedProject(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors ml-4">
-                  <X size={22} />
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2 mb-6">
-                {selectedProject.technologies.map((tech, i) => (
-                  <span key={i} className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs rounded-lg border border-slate-200 dark:border-slate-600">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-              <div className="text-slate-600 dark:text-slate-300 leading-relaxed mb-8 space-y-4">
-                {selectedProject.previewDescription?.split('\n\n').map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
+            {/* Backdrop */}
+            <motion.div
+              className="absolute inset-0 bg-black/65 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Panel */}
+            <motion.div
+              className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 40 }}
+              transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Hero image */}
+              <div className="aspect-video overflow-hidden rounded-t-2xl">
+                <img
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
 
-
-              {selectedProject.carouselImages && selectedProject.carouselImages.length > 0 && (
-                <div className="relative mb-8">
-                  <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-600">
-                    <img
-                      src={selectedProject.carouselImages[carouselIndex]}
-                      alt={`Screenshot ${carouselIndex + 1}`}
-                      className="w-full h-96 object-contain bg-white dark:bg-slate-900"
-                    />
-                  </div>
-                  <button
-                    onClick={() => prevSlide(selectedProject.carouselImages!.length)}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-slate-700/80 hover:bg-white dark:hover:bg-slate-700 rounded-full p-1.5 shadow-md transition-colors"
+              <div className="p-8">
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-slate-900 dark:text-white text-xl font-semibold">
+                    {selectedProject.title}
+                  </h3>
+                  <motion.button
+                    onClick={() => setSelectedProject(null)}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors ml-4"
+                    whileHover={{ rotate: 90, scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <ChevronLeft size={20} className="text-slate-700 dark:text-white" />
-                  </button>
-                  <button
-                    onClick={() => nextSlide(selectedProject.carouselImages!.length)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-slate-700/80 hover:bg-white dark:hover:bg-slate-700 rounded-full p-1.5 shadow-md transition-colors"
-                  >
-                    <ChevronRight size={20} className="text-slate-700 dark:text-white" />
-                  </button>
-                  <div className="flex justify-center gap-1.5 mt-3">
-                    {selectedProject.carouselImages.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setCarouselIndex(i)}
-                        className={`w-2 h-2 rounded-full transition-colors ${i === carouselIndex ? 'bg-[#8B4513]' : 'bg-slate-300 dark:bg-slate-600'}`}
-                      />
-                    ))}
-                  </div>
+                    <X size={22} />
+                  </motion.button>
                 </div>
-              )}
 
-              <div className="flex justify-center">
-                <a
-                  href={selectedProject.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#5C3317] to-[#8B4513] text-white rounded-xl hover:opacity-90 transition-opacity shadow-md"
-                >
-                  <Github size={18} />
-                  View on GitHub
-                </a>
+                {/* Tech badges */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {selectedProject.technologies.map((tech, i) => (
+                    <motion.span
+                      key={i}
+                      className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs rounded-lg border border-slate-200 dark:border-slate-600"
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 + i * 0.04, duration: 0.3 }}
+                    >
+                      {tech}
+                    </motion.span>
+                  ))}
+                </div>
+
+                {/* Description */}
+                <div className="text-slate-600 dark:text-slate-300 leading-relaxed mb-8 space-y-4">
+                  {selectedProject.previewDescription?.split('\n\n').map((para, i) => (
+                    <motion.p
+                      key={i}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 + i * 0.06, duration: 0.4 }}
+                    >
+                      {para}
+                    </motion.p>
+                  ))}
+                </div>
+
+                {/* Carousel */}
+                {selectedProject.carouselImages && selectedProject.carouselImages.length > 0 && (
+                  <div className="relative mb-8">
+                    <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900">
+                      <AnimatePresence mode="wait" custom={direction}>
+                        <motion.img
+                          key={carouselIndex}
+                          custom={direction}
+                          src={selectedProject.carouselImages[carouselIndex]}
+                          alt={`Screenshot ${carouselIndex + 1}`}
+                          className="w-full h-72 sm:h-96 object-contain"
+                          variants={{
+                            enter: (d: number) => ({ x: d > 0 ? 60 : -60, opacity: 0 }),
+                            center: { x: 0, opacity: 1 },
+                            exit:  (d: number) => ({ x: d > 0 ? -60 : 60, opacity: 0 }),
+                          }}
+                          initial="enter"
+                          animate="center"
+                          exit="exit"
+                          transition={{ duration: 0.3, ease: EASE }}
+                        />
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Prev / next */}
+                    <motion.button
+                      onClick={() => prevSlide(selectedProject.carouselImages!.length)}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/85 dark:bg-slate-700/85 rounded-full p-1.5 shadow-md"
+                      whileHover={{ scale: 1.12, x: -2 }}
+                      whileTap={{ scale: 0.92 }}
+                    >
+                      <ChevronLeft size={20} className="text-slate-700 dark:text-white" />
+                    </motion.button>
+                    <motion.button
+                      onClick={() => nextSlide(selectedProject.carouselImages!.length)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/85 dark:bg-slate-700/85 rounded-full p-1.5 shadow-md"
+                      whileHover={{ scale: 1.12, x: 2 }}
+                      whileTap={{ scale: 0.92 }}
+                    >
+                      <ChevronRight size={20} className="text-slate-700 dark:text-white" />
+                    </motion.button>
+
+                    {/* Dots */}
+                    <div className="flex justify-center gap-1.5 mt-3">
+                      {selectedProject.carouselImages.map((_, i) => (
+                        <motion.button
+                          key={i}
+                          onClick={() => { setDirection(i > carouselIndex ? 1 : -1); setCarouselIndex(i); }}
+                          className="h-2 rounded-full"
+                          animate={{
+                            width: i === carouselIndex ? '1.25rem' : '0.5rem',
+                            backgroundColor: i === carouselIndex ? '#8B4513' : '#cbd5e1',
+                          }}
+                          transition={{ duration: 0.25 }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* GitHub CTA */}
+                <div className="flex justify-center">
+                  <motion.a
+                    href={selectedProject.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#5C3317] to-[#8B4513] text-white rounded-xl shadow-md"
+                    whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(139,69,19,0.35)' }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Github size={18} />
+                    View on GitHub
+                  </motion.a>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
